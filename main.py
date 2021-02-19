@@ -7,11 +7,18 @@ from extras import *
 with open("tokenfile", "r") as tokenfile:
 	token=tokenfile.read()
 
-client = commands.Bot(command_prefix="s?")
+prefix = 's?'
+
+client = commands.Bot(command_prefix=prefix)
+client.remove_command("help")
+
+helpmessage = discord.Embed(title="Commands", colour=discord.Colour(0xd084), description=f"**spoiler** - makes a message spoilered, can do images too. use: ```{prefix}[spoiler|sp] [text]```\n\n**help** - help message. use: ```{prefix}[help|h]```")
+helpmessage.set_author(name="Help")
 
 @client.event
 async def on_ready():
-	print("logged in as {0.user}".format(client))
+	await client.change_presence(activity=discord.Game(name="s?help"))
+	print("hello world")
 	
 
 @client.command(aliases=["sp"])
@@ -40,9 +47,21 @@ async def spoiler(ctx,*text):
 	await hook.send(content=txt,files=images)
 	await hook.delete()
 
-@client.command(aliases=["sw"])
-async def swear(ctx,*text):
-	pass
+@client.command(aliases=["h"])
+async def help(ctx,*text):
+	
+	helpmessage.set_footer(text=f"{ctx.author.name}", icon_url=f"https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png")
 
+	await ctx.send(embed=helpmessage)
+
+@client.command(aliases=["p"])
+async def ping(ctx,*text):
+	ping = client.latency * 1000
+	ping = str(ping).split(".")
+	await ctx.send(ping[0])
+
+@client.command(aliases=["github","git","r"])
+async def repo(ctx,*text):
+	await ctx.send("this spoiler bot: http://github.com/gamererr/spoiler-bot\nthe old one: http://github.com/vresod/spoiler-bot")
 
 client.run(token)
